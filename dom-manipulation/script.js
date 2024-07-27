@@ -96,6 +96,7 @@
 // Load quotes and category filter from local storage or initialize with default values
 
 // Load quotes and category filter from local storage or initialize with default values
+// Load quotes and category filter from local storage or initialize with default values
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", category: "Inspiration" },
     { text: "The way to get started is to quit talking and begin doing.", category: "Motivation" },
@@ -117,7 +118,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   function showRandomQuote() {
     const filteredQuotes = getFilteredQuotes();
     if (filteredQuotes.length === 0) {
-      document.getElementById('quoteDisplay').innerHTML = '<p>No quotes available for this category</p>';
+      document.getElementById('quoteDisplay').textContent = 'No quotes available for this category';
       return;
     }
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
@@ -128,7 +129,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   // Function to display a quote
   function displayQuote(quote) {
     const quoteDisplay = document.getElementById('quoteDisplay');
-    quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>- ${quote.category}</em></p>`;
+    quoteDisplay.textContent = `${quote.text} - ${quote.category}`;
   }
   
   // Function to get filtered quotes based on selected category
@@ -213,14 +214,16 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       displayQuote(filteredQuotes[0]);
     } else {
       const quoteDisplay = document.getElementById('quoteDisplay');
-      quoteDisplay.innerHTML = '<p>No quotes available for this category</p>';
+      quoteDisplay.textContent = 'No quotes available for this category';
     }
   }
   
   // Initialize the application
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
   document.getElementById('exportQuotes').addEventListener('click', exportQuotesAsJson);
+  document.getElementById('importFile').addEventListener('change', importFromJsonFile);
+  
   populateCategories();
-  showRandomQuote();
+  filterQuotes();
   createAddQuoteForm();
-    
+  
