@@ -1,9 +1,14 @@
-// Array to hold quotes
-let quotes = [
+// Load quotes from local storage or initialize with default quotes
+let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", category: "Inspiration" },
     { text: "The way to get started is to quit talking and begin doing.", category: "Motivation" },
     { text: "Your time is limited, so don't waste it living someone else's life.", category: "Life" }
   ];
+  
+  // Save quotes to local storage
+  function saveQuotes() {
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+  }
   
   // Function to show a random quote
   function showRandomQuote() {
@@ -40,6 +45,7 @@ let quotes = [
   
     const newQuote = { text: newQuoteText, category: newQuoteCategory };
     quotes.push(newQuote);
+    saveQuotes(); // Save to local storage
   
     // Clear input fields
     document.getElementById('newQuoteText').value = '';
@@ -48,8 +54,35 @@ let quotes = [
     alert('New quote added successfully!');
   }
   
+  // Function to export quotes as JSON
+  function exportQuotesAsJson() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(quotes));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "quotes.json");
+    document.body.appendChild(downloadAnchorNode); // Required for FF
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  }
+  
+  // Function to import quotes from a JSON file
+  function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+      const importedQuotes = JSON.parse(event.target.result);
+      quotes.push(...importedQuotes);
+      saveQuotes();
+      alert('Quotes imported successfully!');
+      showRandomQuote(); // Refresh displayed quote
+    };
+    fileReader.readAsText(event.target.files[0]);
+  }
+  
   // Add event listener to "Show New Quote" button
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+  
+  // Add event listener to the "Export Quotes" button
+  document.getElementById('exportQuotes').addEventListener('click', exportQuotesAsJson);
   
   // Initialize with a random quote
   showRandomQuote();
