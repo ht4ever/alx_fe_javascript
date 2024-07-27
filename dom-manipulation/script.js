@@ -94,6 +94,8 @@
 //   createAddQuoteForm();
   
 // Load quotes and category filter from local storage or initialize with default values
+
+// Load quotes and category filter from local storage or initialize with default values
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", category: "Inspiration" },
     { text: "The way to get started is to quit talking and begin doing.", category: "Motivation" },
@@ -114,6 +116,10 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   // Function to show a random quote
   function showRandomQuote() {
     const filteredQuotes = getFilteredQuotes();
+    if (filteredQuotes.length === 0) {
+      document.getElementById('quoteDisplay').innerHTML = '<p>No quotes available for this category</p>';
+      return;
+    }
     const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
     const randomQuote = filteredQuotes[randomIndex];
     displayQuote(randomQuote);
@@ -157,7 +163,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     const newQuote = { text: newQuoteText, category: newQuoteCategory };
     quotes.push(newQuote);
     saveQuotes();
-    populateCategoryFilter();
+    populateCategories();
     document.getElementById('newQuoteText').value = '';
     document.getElementById('newQuoteCategory').value = '';
     alert('New quote added successfully!');
@@ -184,13 +190,14 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
       quotes.push(...importedQuotes);
       saveQuotes();
       alert('Quotes imported successfully!');
+      populateCategories();
       showRandomQuote();
     };
     fileReader.readAsText(event.target.files[0]);
   }
   
   // Function to populate category filter dropdown
-  function populateCategoryFilter() {
+  function populateCategories() {
     const categoryFilter = document.getElementById('categoryFilter');
     const categories = ['all', ...new Set(quotes.map(quote => quote.category))];
     categoryFilter.innerHTML = categories.map(category => `<option value="${category}">${category}</option>`).join('');
@@ -213,7 +220,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
   // Initialize the application
   document.getElementById('newQuote').addEventListener('click', showRandomQuote);
   document.getElementById('exportQuotes').addEventListener('click', exportQuotesAsJson);
-  populateCategoryFilter();
+  populateCategories();
   showRandomQuote();
   createAddQuoteForm();
-  
+    
