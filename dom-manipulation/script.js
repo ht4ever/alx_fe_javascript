@@ -17,7 +17,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     const randomQuote = quotes[randomIndex];
     quoteDisplay.innerHTML = `<p>${randomQuote.text}</p><p><em>- ${randomQuote.category}</em></p>`;
   }
-  showRandomQuote()
+  
   // Function to create and display the form for adding new quotes
   function createAddQuoteForm() {
     const formContainer = document.createElement('div');
@@ -32,7 +32,7 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     // Add event listener to the "Add Quote" button
     document.getElementById('addQuoteButton').addEventListener('click', addQuote);
   }
-
+  
   // Function to add a new quote
   function addQuote() {
     const newQuoteText = document.getElementById('newQuoteText').value;
@@ -68,16 +68,28 @@ let quotes = JSON.parse(localStorage.getItem('quotes')) || [
     downloadAnchorNode.remove();
   }
   
-  // Function to imp
-    // Add event listener to "Show New Quote" button
-    document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+  // Function to import quotes from a JSON file
+  function importFromJsonFile(event) {
+    const fileReader = new FileReader();
+    fileReader.onload = function(event) {
+      const importedQuotes = JSON.parse(event.target.result);
+      quotes.push(...importedQuotes);
+      saveQuotes();
+      alert('Quotes imported successfully!');
+      showRandomQuote(); // Refresh displayed quote
+    };
+    fileReader.readAsText(event.target.files[0]);
+  }
   
-    // Add event listener to the "Export Quotes" button
-    document.getElementById('exportQuotes').addEventListener('click', exportQuotesAsJson);
-    
-    // Initialize with a random quote
-    showRandomQuote();
-    
-    // Create and display the form for adding new quotes
-    createAddQuoteForm();
-    
+  // Add event listener to "Show New Quote" button
+  document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+  
+  // Add event listener to the "Export Quotes" button
+  document.getElementById('exportQuotes').addEventListener('click', exportQuotesAsJson);
+  
+  // Initialize with a random quote
+  showRandomQuote();
+  
+  // Create and display the form for adding new quotes
+  createAddQuoteForm();
+  
