@@ -431,7 +431,7 @@ function createAddQuoteForm() {
   document.getElementById('addQuoteButton').addEventListener('click', addQuote);
 }
 
-function addQuote() {
+async function addQuote() {
   const newQuoteText = document.getElementById('newQuoteText').value;
   const newQuoteCategory = document.getElementById('newQuoteCategory').value;
   if (newQuoteText === '' || newQuoteCategory === '') {
@@ -441,11 +441,28 @@ function addQuote() {
   const newQuote = { text: newQuoteText, category: newQuoteCategory };
   quotes.push(newQuote);
   saveQuotes();
+  await postQuoteToServer(newQuote); // Post the new quote to the server
   populateCategories();
   document.getElementById('newQuoteText').value = '';
   document.getElementById('newQuoteCategory').value = '';
   alert('New quote added successfully!');
   syncWithServer();
+}
+
+async function postQuoteToServer(quote) {
+  try {
+    const response = await fetch(mockApiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(quote),
+    });
+    const result = await response.json();
+    console.log('Quote posted to server:', result);
+  } catch (error) {
+    console.error('Error posting quote to server:', error);
+  }
 }
 
 function exportQuotesAsJson() {
@@ -506,9 +523,16 @@ async function fetchQuotesFromServer() {
 
 async function syncWithServer() {
   const serverQuotes = await fetchQuotesFromServer();
-  quotes = mergeQuotes(quotes, serverQuotes);
-  saveQuotes();
-  alert('Data synced with server');
+  const mergedQuotes = mergeQuotes(quotes, serverQuotes);
+  if (mergedQuotes.length !== quotes.length) {
+    quotes = mergedQuotes;
+    saveQuotes();
+    alert('Data synced with server. Conflicts resolved.');
+    populateCategories();
+    showRandomQuote();
+  } else {
+    console.log('No new quotes or conflicts detected.');
+  }
 }
 
 function mergeQuotes(localQuotes, serverQuotes) {
